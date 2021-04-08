@@ -12,10 +12,12 @@ if ENV["COVER"]
 
   SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
     SimpleCov::Formatter::HTMLFormatter,
-    SimpleCov::Formatter::LcovFormatter
+    SimpleCov::Formatter::LcovFormatter,
   ])
 
   SimpleCov.start do
+    minimum_coverage(100) if ENV["FULL_COVERAGE_CHECK"] == "true"
+
     enable_coverage :branch
     minimum_coverage line: 100, branch: 100
     add_filter "spec"

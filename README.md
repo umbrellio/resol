@@ -71,6 +71,12 @@ Methods:
 - `value!` – unwraps a result object, returns the value for success result, and throws an error for failure result
 - `value_or(other_value, &block)` – returns a value for success result or `other_value` for failure result (either calls `block` in case it given)
 
+
+### Configuration
+
+Configuration constant references to `SmartCore::Initializer::Configuration`. You can read
+about available configuration options [here](https://github.com/smart-rb/smart_initializer#configuration).
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `bin/rspec` to run the tests.

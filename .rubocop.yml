@@ -1,23 +1,19 @@
+inherit_gem:
+  rubocop-config-umbrellio: lib/rubocop.yml
+
 AllCops:
+  DisplayCopNames: true
   TargetRubyVersion: 2.6
-  NewCops: enable
 
-Style/StringLiterals:
-  Enabled: true
-  EnforcedStyle: double_quotes
+Naming/MethodParameterName:
+  AllowedNames: ["x", "y", "z"]
 
-Style/StringLiteralsInInterpolation:
-  Enabled: true
-  EnforcedStyle: double_quotes
-
-Style/RaiseArgs:
+RSpec/EmptyLineAfterHook:
   Enabled: false
 
-Style/Documentation:
+Naming/RescuedExceptionsVariableName:
   Enabled: false
 
-Layout/LineLength:
-  Max: 100
-
-Layout/FirstArrayElementIndentation:
-  EnforcedStyle: consistent
+Style/HashConversion:
+  Exclude:
+    - spec/**/*_spec.rb

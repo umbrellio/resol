@@ -16,6 +16,7 @@ RSpec.describe Resol::Result do
     it { expect(result.success?).to be_falsey }
     it { expect(result.failure?).to be_truthy }
     it { expect(result.value_or(:other_value)).to eq(:other_value) }
+
     it do
       expect { result.value! }.to raise_error(Resol::UnwrapError, "Failure result :failure_value")
     end

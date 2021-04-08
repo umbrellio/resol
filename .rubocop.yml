@@ -1,0 +1,23 @@
+AllCops:
+  TargetRubyVersion: 2.6
+  NewCops: enable
+
+Style/StringLiterals:
+  Enabled: true
+  EnforcedStyle: double_quotes
+
+Style/StringLiteralsInInterpolation:
+  Enabled: true
+  EnforcedStyle: double_quotes
+
+Style/RaiseArgs:
+  Enabled: false
+
+Style/Documentation:
+  Enabled: false
+
+Layout/LineLength:
+  Max: 100
+
+Layout/FirstArrayElementIndentation:
+  EnforcedStyle: consistent

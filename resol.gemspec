@@ -20,6 +20,7 @@ Gem::Specification.new do |spec|
   spec.add_dependency "smart_initializer", "~> 0.5"
   spec.add_dependency "uber", "~> 0.1"
 
+  spec.add_development_dependency "bundler-audit"
   spec.add_development_dependency "ci-helper"
   spec.add_development_dependency "pry"
   spec.add_development_dependency "rake"

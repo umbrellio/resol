@@ -15,6 +15,9 @@ GEM
       tzinfo (~> 2.0)
       zeitwerk (~> 2.3)
     ast (2.4.2)
+    bundler-audit (0.8.0)
+      bundler (>= 1.2.0, < 3)
+      thor (~> 1.0)
     ci-helper (0.4.2)
       colorize (~> 0.8)
       dry-inflector (~> 0.2)
@@ -103,6 +106,7 @@ GEM
     smart_types (0.4.0)
       smart_engine (~> 0.11)
     symbiont-ruby (0.6.0)
+    thor (1.1.0)
     tzinfo (2.0.4)
       concurrent-ruby (~> 1.0)
     uber (0.1.0)
@@ -117,6 +121,7 @@ PLATFORMS
   x86_64-linux
 
 DEPENDENCIES
+  bundler-audit
   ci-helper
   pry
   rake

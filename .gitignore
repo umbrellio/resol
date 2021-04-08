@@ -9,6 +9,3 @@
 
 # rspec failure tracking
 .rspec_status
-
-# Use resol.gemspec to specify gem's version
-Gemfile.lock

@@ -16,10 +16,8 @@ if ENV["COVER"]
   ])
 
   SimpleCov.start do
-    minimum_coverage(100) if ENV["FULL_COVERAGE_CHECK"] == "true"
-
     enable_coverage :branch
-    minimum_coverage line: 100, branch: 100
+    minimum_coverage line: 100, branch: 100 if ENV["FULL_COVERAGE_CHECK"] == "true"
     add_filter "spec"
   end
 end

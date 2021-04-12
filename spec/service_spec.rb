@@ -23,7 +23,7 @@ RSpec.describe Resol::Service do
 
   it "raises a failure result error" do
     expect { FailureService.call! }.to raise_error do |error|
-      expect(error).is_a?(FailureService::Failure)
+      expect(error).to be_a(FailureService::Failure)
       expect(error.code).to eq(:failure_result)
       expect(error.data).to eq(data: 123)
     end
@@ -31,7 +31,7 @@ RSpec.describe Resol::Service do
 
   it "raises an unimplemented error" do
     expect { EmptyService.call! }.to raise_error do |error|
-      expect(error).is_a?(EmptyService::InvalidCommandImplementation)
+      expect(error).to be_a(EmptyService::InvalidCommandImplementation)
       expect(error.message).to eq("No success! or fail! called in the #call method in EmptyService")
     end
   end

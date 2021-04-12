@@ -1,7 +1,7 @@
 # Resol
 
 ![https://github.com/umbrellio/resol](https://github.com/umbrellio/resol/actions/workflows/main.yml/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/umbrellio/resol/badge.svg?branch=master)](https://coveralls.io/github/umbrellio/resol?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/umbrellio/resol/badge.svg?branch=master)](https://coveralls.io/github/umbrellio/resol?branch=master) [![Gem Version](https://badge.fury.io/rb/resol.svg)](https://badge.fury.io/rb/resol)
 
 Ruby Gem for creating simple service objects and other any object ruby patterns.
 
@@ -71,9 +71,17 @@ Methods:
 - `value!` – unwraps a result object, returns the value for success result, and throws an error for failure result
 - `value_or(other_value, &block)` – returns a value for success result or `other_value` for failure result (either calls `block` in case it given)
 
+
+### Configuration
+
+Configuration constant references to `SmartCore::Initializer::Configuration`. You can read
+about available configuration options [here](https://github.com/smart-rb/smart_initializer#configuration).
+
 ## Development
 
 After checking out the repo, run `bin/setup` to install dependencies. Then, run `bin/rspec` to run the tests.
+If you want to check coverage, then set env variable `COVER` to `true` before running `bin/rspec`:
+`COVER=true bin/rspec`.
 You can also run `bin/console` for an interactive prompt that will allow you to experiment.
 
 To install this gem onto your local machine, run `bundle exec rake install`. To release a new version, update the version number in `version.rb`, and then run `bundle exec rake release`, which will create a git tag for the version, push git commits and the created tag, and push the `.gem` file to [rubygems.org](https://rubygems.org).

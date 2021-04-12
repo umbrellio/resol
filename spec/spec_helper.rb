@@ -12,7 +12,7 @@ if ENV["COVER"]
 
   SimpleCov.formatter = SimpleCov::Formatter::MultiFormatter.new([
     SimpleCov::Formatter::HTMLFormatter,
-    SimpleCov::Formatter::LcovFormatter
+    SimpleCov::Formatter::LcovFormatter,
   ])
 
   SimpleCov.start do

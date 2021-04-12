@@ -7,4 +7,5 @@ require_relative "resol/version"
 require_relative "resol/service"
 
 module Resol
+  Configuration = SmartCore::Initializer::Configuration
 end

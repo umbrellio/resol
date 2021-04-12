@@ -1,7 +1,7 @@
 # Resol
 
 ![https://github.com/umbrellio/resol](https://github.com/umbrellio/resol/actions/workflows/main.yml/badge.svg)
-[![Coverage Status](https://coveralls.io/repos/github/umbrellio/resol/badge.svg?branch=master)](https://coveralls.io/github/umbrellio/resol?branch=master)
+[![Coverage Status](https://coveralls.io/repos/github/umbrellio/resol/badge.svg?branch=master)](https://coveralls.io/github/umbrellio/resol?branch=master) [![Gem Version](https://badge.fury.io/rb/resol.svg)](https://badge.fury.io/rb/resol)
 
 Ruby Gem for creating simple service objects and other any object ruby patterns.
 

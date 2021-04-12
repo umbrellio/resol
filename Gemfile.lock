@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    resol (0.1.0)
+    resol (0.2.0)
       smart_initializer (~> 0.5)
       uber (~> 0.1)
 

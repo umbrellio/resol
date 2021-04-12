@@ -3,7 +3,6 @@ name: Test
 on: [push, pull_request]
 
 env:
-  FULL_COVERAGE_CHECK: true
   COVER: true
 
 jobs:
@@ -36,7 +35,6 @@ jobs:
     continue-on-error: ${{ matrix.experimental }}
 
     env:
-      FULL_TEST_COVERAGE_CHECK: false
       COVER: false
 
     # We want to run on external PRs, but not on our own internal PRs as they'll be run on push event

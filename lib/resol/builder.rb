@@ -8,11 +8,11 @@ module Resol
     end
 
     module ClassMethods
-      def build_klass(*args, **kwargs)
+      def build_klass(*args)
         klass = self
 
         loop do
-          new_klass = klass.build!(klass, *args, **kwargs)
+          new_klass = klass.build!(klass, *args)
           break if new_klass == klass
 
           klass = new_klass

@@ -49,8 +49,8 @@ module Resol
         super
       end
 
-      def call(*args, **options, &block)
-        command = build(*args, **options)
+      def call(*args, &block)
+        command = build(*args)
         command.call(&block)
 
         error_message = "No success! or fail! called in the #call method in #{command.class}"

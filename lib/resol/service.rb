@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require_relative "builder"
+require_relative "callbacks"
 require_relative "result"
 
 module Resol
@@ -41,6 +42,7 @@ module Resol
 
     include SmartCore::Initializer
     include Resol::Builder
+    include Resol::Callbacks
 
     class << self
       def inherited(klass)
@@ -51,6 +53,7 @@ module Resol
 
       def call(*args, &block)
         command = build(*args)
+        __run_callbacks__(command)
         command.call(&block)
 
         error_message = "No success! or fail! called in the #call method in #{command.class}"

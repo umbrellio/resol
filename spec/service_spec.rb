@@ -16,6 +16,30 @@ class EmptyService < Resol::Service
   def call; end
 end
 
+class ServiceWithCallbacks < Resol::Service
+  before_call :define_instance_var
+
+  def call
+    success!(@some_var)
+  end
+
+  private
+
+  def define_instance_var
+    @some_var = "some_value"
+  end
+end
+
+class SubServiceWithCallbacks < ServiceWithCallbacks
+  before_call :set_other_value
+
+  private
+
+  def set_other_value
+    @some_var += "_postfix"
+  end
+end
+
 RSpec.describe Resol::Service do
   it "returns a success result" do
     expect(SuccessService.call!).to eq(:success_result)
@@ -34,5 +58,10 @@ RSpec.describe Resol::Service do
       expect(error).to be_a(EmptyService::InvalidCommandImplementation)
       expect(error.message).to eq("No success! or fail! called in the #call method in EmptyService")
     end
+  end
+
+  it "properly executes callbacks" do
+    expect(SubServiceWithCallbacks.call!).to eq("some_value_postfix")
+    expect(ServiceWithCallbacks.call!).to eq("some_value")
   end
 end

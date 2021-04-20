@@ -63,6 +63,34 @@ All incoming params and options can be defined using a [smart_initializer](https
 - `success!(value)` – finish with a success value
 - `fail!(code, data = nil)` – fail with any error code and optional data
 
+#### Define callbacks
+
+You can define callbacks to be executed before calling the `#call` method.
+
+```ruby
+class FindUser < Resol::Service
+  param :id
+
+  before_call :set_user
+
+  def call
+    if user
+      success!(user)
+    else
+      fail!(:not_found)
+    end
+  end
+
+  private
+
+  attr_accessor :user
+
+  def set_user
+    self.user = User.find(id)
+  end
+end
+```
+
 ### Result objects
 
 Methods:

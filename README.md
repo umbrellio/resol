@@ -68,7 +68,6 @@ All incoming params and options can be defined using a [smart_initializer](https
 You can define callbacks to be executed before calling the `#call` method.
 
 ```ruby
-
 class FindUser < Resol::Service
   param :id
 
@@ -90,6 +89,7 @@ class FindUser < Resol::Service
     self.user = User.find(id)
   end
 end
+```
 
 ### Result objects
 

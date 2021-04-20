@@ -2,10 +2,9 @@
 
 module Resol
   module Callbacks
-    def self.included(othermod)
-      super
-      othermod.extend(ClassMethods)
-      othermod.instance_variable_set(:@__callback_methods__, [])
+    def self.included(base)
+      base.extend(ClassMethods)
+      base.instance_variable_set(:@__callback_methods__, [])
     end
 
     module ClassMethods

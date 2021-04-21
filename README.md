@@ -99,6 +99,8 @@ Methods:
 - `failure?` – returns `true` for failure result and `false` for success result
 - `value!` – unwraps a result object, returns the value for success result, and throws an error for failure result
 - `value_or(other_value, &block)` – returns a value for success result or `other_value` for failure result (either calls `block` in case it given)
+- `or(&block)` - calls block for failure result, for success result does nothing
+- `either(success_proc, failure_proc)` - for success result calls success_proc with result value in args, for failure result calls failure_proc with error in args.
 
 
 ### Configuration

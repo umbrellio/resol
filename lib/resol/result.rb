@@ -10,6 +10,14 @@ module Resol
     # @!method value!
 
     def initialize(*); end
+
+    def or
+      yield(@value) if failure?
+    end
+
+    def either(success_proc, failure_proc)
+      success? ? success_proc.call(@value) : failure_proc.call(@value)
+    end
   end
 
   class Success < Result

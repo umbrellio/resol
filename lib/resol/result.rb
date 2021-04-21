@@ -12,9 +12,7 @@ module Resol
     def initialize(*); end
 
     def or
-      return if success?
-
-      yield(@value)
+      yield(@value) if failure?
     end
 
     def either(success_proc, failure_proc)

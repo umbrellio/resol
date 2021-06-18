@@ -20,7 +20,7 @@ module Resol
       private
 
       def __run_callbacks__(instance)
-        @__callback_methods__.each { |method_name| instance.send(method_name) }
+        @__callback_methods__.each { |method_name| instance.__send__(method_name) }
       end
     end
   end

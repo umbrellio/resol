@@ -70,11 +70,11 @@ module Resol
     end
   end
 
-  def self.Success(*args)
-    Success.new(*args)
+  def self.Success(...)
+    Success.new(...)
   end
 
-  def self.Failure(*args)
-    Failure.new(*args)
+  def self.Failure(...)
+    Failure.new(...)
   end
 end

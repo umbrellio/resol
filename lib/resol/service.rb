@@ -51,8 +51,8 @@ module Resol
         super
       end
 
-      def call(*args, &block)
-        command = build(*args)
+      def call(*args, **kwargs, &block)
+        command = build(*args, **kwargs)
         __run_callbacks__(command)
         command.call(&block)
 
@@ -64,8 +64,8 @@ module Resol
         Resol::Failure(e)
       end
 
-      def call!(*args)
-        call(*args).value_or { |error| raise error }
+      def call!(...)
+        call(...).value_or { |error| raise error }
       end
     end
 

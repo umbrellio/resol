@@ -118,6 +118,7 @@ GEM
 
 PLATFORMS
   x86_64-darwin-19
+  x86_64-darwin-20
   x86_64-linux
 
 DEPENDENCIES
@@ -132,4 +133,4 @@ DEPENDENCIES
   simplecov-lcov
 
 BUNDLED WITH
-   2.2.15
+   2.2.17

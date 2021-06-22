@@ -36,7 +36,7 @@ RSpec.describe Resol do
   it "builds a right service" do
     expect(BaseService.build(:a, option: true)).to be_a(ServiceA)
     expect(BaseService.build(:b, option: true)).to be_a(ServiceB)
-    expect(BaseService.build(:other, option: false)).to be_a(BaseService)
     expect(BaseService.build(:other, option: true)).to be_a(ServiceC)
+    expect(BaseService.build(:other, option: false)).to be_a(BaseService)
   end
 end

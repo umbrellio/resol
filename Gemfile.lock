@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    resol (0.4.1)
+    resol (0.4.2)
       smart_initializer (~> 0.5)
 
 GEM

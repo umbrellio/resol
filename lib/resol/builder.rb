@@ -3,16 +3,38 @@
 module Resol
   module Builder
     def self.included(base)
-      base.include(Uber::Builder)
       base.extend(ClassMethods)
     end
 
+    class Builders < Array
+      def call(initial_klass, *args, **kwargs)
+        each do |block|
+          klass = block.call(initial_klass, *args, **kwargs) and return klass
+        end
+
+        initial_klass
+      end
+
+      def <<(proc)
+        wrapped = -> (ctx, *args, **kwargs) { ctx.instance_exec(*args, **kwargs, &proc) }
+        super(wrapped)
+      end
+    end
+
     module ClassMethods
-      def build_klass(...)
+      def builders
+        @builders ||= Builders.new
+      end
+
+      def builds(proc = nil, &block)
+        self.builders << (proc || block)
+      end
+
+      def build_klass(*args, **kwargs)
         klass = self
 
         loop do
-          new_klass = klass.build!(klass, ...)
+          new_klass = klass.builders.call(klass, *args, **kwargs)
           break if new_klass == klass
 
           klass = new_klass

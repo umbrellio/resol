@@ -27,7 +27,7 @@ module Resol
       end
 
       def builds(proc = nil, &block)
-        self.builders << (proc || block)
+        builders << (proc || block)
       end
 
       def build_klass(*args, **kwargs)

@@ -1,6 +1,8 @@
 # frozen_string_literal: true
 
 module Resol
+  # Most of the code here is borrowed from Uber::Builder code
+  # See https://github.com/apotonick/uber/blob/master/lib/uber/builder.rb
   module Builder
     def self.included(base)
       base.extend(ClassMethods)

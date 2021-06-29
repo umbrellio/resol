@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    resol (0.5.1)
+    resol (0.6.0)
       smart_initializer (~> 0.7)
 
 GEM
@@ -131,4 +131,4 @@ DEPENDENCIES
   simplecov-lcov
 
 BUNDLED WITH
-   2.2.19
+   2.2.21

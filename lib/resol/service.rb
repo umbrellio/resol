@@ -8,12 +8,13 @@ module Resol
   class Service
     class InvalidCommandImplementation < StandardError; end
 
-    class Interruption < StandardError
-      attr_accessor :data
+    class Failure < StandardError
+      attr_accessor :data, :code
 
-      def initialize(data)
+      def initialize(code, data)
+        self.code = code
         self.data = data
-        super
+        super(data)
       end
 
       def inspect
@@ -21,45 +22,33 @@ module Resol
       end
 
       def message
-        data.inspect
-      end
-    end
-
-    class Failure < Interruption
-      attr_accessor :code
-
-      def initialize(code, data)
-        self.code = code
-        super(data)
-      end
-
-      def message
         data ? "#{code.inspect} => #{data.inspect}" : code.inspect
       end
     end
-
-    class Success < Interruption; end
 
     include SmartCore::Initializer
     include Resol::Builder
     include Resol::Callbacks
 
+    SUCCESS_TAG = Object.new.freeze
+    Result = Struct.new(:data)
+
     class << self
       def inherited(klass)
         klass.const_set(:Failure, Class.new(klass::Failure))
-        klass.const_set(:Success, Class.new(klass::Success))
         super
       end
 
       def call(*args, **kwargs, &block)
         command = build(*args, **kwargs)
-        __run_callbacks__(command)
-        command.call(&block)
+        result = catch(SUCCESS_TAG) do
+          __run_callbacks__(command)
+          command.call(&block)
+        end
+        return Resol::Success(result.data) unless result.nil?
 
         error_message = "No success! or fail! called in the #call method in #{command.class}"
         raise InvalidCommandImplementation, error_message
-      rescue self::Success => e
-        Resol::Success(e.data)
       rescue self::Failure => e
         Resol::Failure(e)
       end
@@ -78,7 +67,7 @@ module Resol
     end
 
     def success!(data = nil)
-      raise self.class::Success.new(data)
+      throw(SUCCESS_TAG, Result.new(data))
     end
   end
 end

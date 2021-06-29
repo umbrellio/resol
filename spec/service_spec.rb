@@ -70,6 +70,12 @@ class ServiceWithFailInTransaction < Resol::Service
   end
 end
 
+class HackyService < Resol::Service
+  def call
+    SuccessService.build.call
+  end
+end
+
 RSpec.describe Resol::Service do
   it "returns a success result" do
     expect(SuccessService.call!).to eq(:success_result)
@@ -111,6 +117,14 @@ RSpec.describe Resol::Service do
       end
 
       expect(DB.rollbacked).to eq(true)
+    end
+  end
+
+  context "when using instance #call inside other service" do
+    let(:expected_message) { "uncaught throw SuccessService" }
+
+    it "raises an exception" do
+      expect { HackyService.call! }.to raise_error(UncaughtThrowError, expected_message)
     end
   end
 end

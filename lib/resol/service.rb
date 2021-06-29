@@ -26,22 +26,33 @@ module Resol
       end
     end
 
+    class CatchTag
+      def initialize(owner_class)
+        @owner_class = owner_class
+      end
+
+      def inspect
+        @owner_class.inspect
+      end
+    end
+
     include SmartCore::Initializer
     include Resol::Builder
     include Resol::Callbacks
 
-    SUCCESS_TAG = Object.new.freeze
+    SUCCESS_TAG = CatchTag.new(self).freeze
     Result = Struct.new(:data)
 
     class << self
       def inherited(klass)
         klass.const_set(:Failure, Class.new(klass::Failure))
+        klass.const_set(:SUCCESS_TAG, CatchTag.new(klass).freeze)
         super
       end
 
       def call(*args, **kwargs, &block)
         command = build(*args, **kwargs)
-        result = catch(SUCCESS_TAG) do
+        result = catch(self::SUCCESS_TAG) do
           __run_callbacks__(command)
           command.call(&block)
         end
@@ -67,7 +78,7 @@ module Resol
     end
 
     def success!(data = nil)
-      throw(SUCCESS_TAG, Result.new(data))
+      throw(self.class::SUCCESS_TAG, Result.new(data))
     end
   end
 end

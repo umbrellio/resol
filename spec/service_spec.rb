@@ -60,7 +60,7 @@ end
 
 class ServiceWithTransaction < Resol::Service
   def call
-    DB.transaction { success!(:value) }
+    DB.transaction { success! }
   end
 end
 
@@ -98,7 +98,7 @@ RSpec.describe Resol::Service do
   it "doesn't rollback transaction" do
     result = ServiceWithTransaction.call
     expect(result.success?).to eq(true)
-    expect(result.value!).to eq(:value)
+    expect(result.value!).to eq(nil)
     expect(DB.rollbacked).to eq(false)
   end
 

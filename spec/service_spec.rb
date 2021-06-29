@@ -8,6 +8,7 @@ class DB
       self.rollbacked = false
 
       yield
+      "return_some_val"
       # rubocop:disable Lint/RescueException
     rescue Exception
       # rubocop:enable Lint/RescueException
@@ -59,7 +60,7 @@ end
 
 class ServiceWithTransaction < Resol::Service
   def call
-    DB.transaction { success! }
+    DB.transaction { success!(:value) }
   end
 end
 
@@ -95,7 +96,9 @@ RSpec.describe Resol::Service do
   end
 
   it "doesn't rollback transaction" do
-    expect(ServiceWithTransaction.call!).to be_nil
+    result = ServiceWithTransaction.call
+    expect(result.success?).to eq(true)
+    expect(result.value!).to eq(:value)
     expect(DB.rollbacked).to eq(false)
   end
 
@@ -103,6 +106,9 @@ RSpec.describe Resol::Service do
     it "rollbacks transaction" do
       result = ServiceWithFailInTransaction.call
       expect(result.failure?).to eq(true)
+      result.or do |error|
+        expect(error.code).to eq(:failed)
+      end
 
       expect(DB.rollbacked).to eq(true)
     end

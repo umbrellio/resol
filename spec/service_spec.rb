@@ -1,5 +1,21 @@
 # frozen_string_literal: true
 
+class DB
+  class << self
+    attr_accessor :rollbacked
+
+    def transaction
+      self.rollbacked = false
+
+      yield
+      # rubocop:disable Lint/RescueException
+    rescue Exception
+      # rubocop:enable Lint/RescueException
+      self.rollbacked = true
+    end
+  end
+end
+
 class SuccessService < Resol::Service
   def call
     success!(:success_result)
@@ -40,6 +56,12 @@ class SubServiceWithCallbacks < ServiceWithCallbacks
   end
 end
 
+class ServiceWithTransaction < Resol::Service
+  def call
+    DB.transaction { success! }
+  end
+end
+
 RSpec.describe Resol::Service do
   it "returns a success result" do
     expect(SuccessService.call!).to eq(:success_result)
@@ -63,5 +85,10 @@ RSpec.describe Resol::Service do
   it "properly executes callbacks" do
     expect(SubServiceWithCallbacks.call!).to eq("some_value_postfix")
     expect(ServiceWithCallbacks.call!).to eq("some_value")
+  end
+
+  it "doesn't rollback transaction" do
+    expect(ServiceWithTransaction.call!).to be_nil
+    expect(DB.rollbacked).to eq(false)
   end
 end

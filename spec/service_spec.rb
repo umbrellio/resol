@@ -31,7 +31,9 @@ class FailureService < Resol::Service
 end
 
 class EmptyService < Resol::Service
-  def call; end
+  def call
+    "some_string"
+  end
 end
 
 class ServiceWithCallbacks < Resol::Service
@@ -71,8 +73,11 @@ class ServiceWithFailInTransaction < Resol::Service
 end
 
 class HackyService < Resol::Service
+  param :count
+
   def call
-    SuccessService.build.call
+    success! unless count.zero?
+    HackyService.build(count + 1).call
   end
 end
 
@@ -121,10 +126,10 @@ RSpec.describe Resol::Service do
   end
 
   context "when using instance #call inside other service" do
-    let(:expected_message) { "uncaught throw SuccessService" }
+    let(:expected_message) { /uncaught throw #<HackyService/ }
 
     it "raises an exception" do
-      expect { HackyService.call! }.to raise_error(UncaughtThrowError, expected_message)
+      expect { HackyService.call!(0) }.to raise_error(UncaughtThrowError, expected_message)
     end
   end
 end

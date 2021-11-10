@@ -41,6 +41,10 @@ module Resol
     def value!
       @value
     end
+
+    def error
+      nil
+    end
   end
 
   class Failure < Result
@@ -67,6 +71,10 @@ module Resol
 
     def value!
       raise UnwrapError, "Failure result #{@value.inspect}"
+    end
+
+    def error
+      @value
     end
   end
 

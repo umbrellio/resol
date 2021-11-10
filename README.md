@@ -99,9 +99,16 @@ Methods:
 - `failure?` – returns `true` for failure result and `false` for success result
 - `value!` – unwraps a result object, returns the value for success result, and throws an error for failure result
 - `value_or(other_value, &block)` – returns a value for success result or `other_value` for failure result (either calls `block` in case it given)
-- `or(&block)` - calls block for failure result, for success result does nothing
-- `either(success_proc, failure_proc)` - for success result calls success_proc with result value in args, for failure result calls failure_proc with error in args.
+- `error` – returns `nil` for success result and error object (with code and data) for failure result
+- `or(&block)` – calls block for failure result, for success result does nothing
+- `either(success_proc, failure_proc)` – for success result calls success_proc with result value in args, for failure result calls failure_proc with error in args.
 
+### Error object
+
+In case of failure you can get an error object with error code
+and data from `fail!` arguments. This can be done by method `error` on
+the result object and the returned object will have corresponding
+methods `code` and `data`.
 
 ### Configuration
 

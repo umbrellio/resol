@@ -94,9 +94,8 @@ class HackyService < Resol::Service
   param :count
 
   def call
-    success!(:non_zero) unless count.zero?
+    success! unless count.zero?
     HackyService.build(count + 1).call
-    success!(:zero)
   end
 end
 

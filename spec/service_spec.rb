@@ -36,6 +36,24 @@ class EmptyService < Resol::Service
   end
 end
 
+class AbstractService < Resol::Service
+end
+
+class InheritedService < AbstractService
+  def call
+    success!(:success_result)
+  end
+end
+
+class ServiceWithCall < Resol::Service
+  def call
+    success!(:success_result)
+  end
+end
+
+class SubService < ServiceWithCall
+end
+
 class ServiceWithCallbacks < Resol::Service
   before_call :define_instance_var
 
@@ -76,8 +94,9 @@ class HackyService < Resol::Service
   param :count
 
   def call
-    success! unless count.zero?
+    success!(:non_zero) unless count.zero?
     HackyService.build(count + 1).call
+    success!(:zero)
   end
 end
 
@@ -94,11 +113,19 @@ RSpec.describe Resol::Service do
     end
   end
 
-  it "raises an unimplemented error" do
+  it "raises an InvalidCommandImplementation error" do
     expect { EmptyService.call! }.to raise_error do |error|
       expect(error).to be_a(EmptyService::InvalidCommandImplementation)
       expect(error.message).to eq("No success! or fail! called in the #call method in EmptyService")
     end
+  end
+
+  it "properly works with abstract service" do
+    expect(InheritedService.call!).to eq(:success_result)
+  end
+
+  it "properly works with inherited service" do
+    expect(SubService.call!).to eq(:success_result)
   end
 
   it "properly executes callbacks" do
@@ -125,11 +152,15 @@ RSpec.describe Resol::Service do
     end
   end
 
-  context "when using instance #call inside other service" do
-    let(:expected_message) { /uncaught throw #<HackyService/ }
+  context "when using instance #call" do
+    it "raises error" do
+      expect { SuccessService.build.call }.to raise_error(Resol::Service::InvalidCommandCall)
+    end
+  end
 
-    it "raises an exception" do
-      expect { HackyService.call!(0) }.to raise_error(UncaughtThrowError, expected_message)
+  context "when using instance #call inside other service" do
+    it "raises error" do
+      expect { HackyService.call!(0) }.to raise_error(Resol::Service::InvalidCommandCall)
     end
   end
 end

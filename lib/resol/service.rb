@@ -50,7 +50,7 @@ module Resol
         end
 
         if result == :uncaught
-          error_message = "No success! or fail! called in the #call method in #{service.class}"
+          error_message = "No `#success!` or `#fail!` called in `#call` method in #{service.class}."
           raise InvalidCommandImplementation, error_message
         else
           Resol::Success(result.data)

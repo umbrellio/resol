@@ -116,7 +116,9 @@ RSpec.describe Resol::Service do
   it "raises an InvalidCommandImplementation error" do
     expect { EmptyService.call! }.to raise_error do |error|
       expect(error).to be_a(EmptyService::InvalidCommandImplementation)
-      expect(error.message).to eq("No success! or fail! called in the #call method in EmptyService")
+      expect(error.message).to eq(
+        "No `#success!` or `#fail!` called in `#call` method in EmptyService.",
+      )
     end
   end
 

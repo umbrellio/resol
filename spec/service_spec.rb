@@ -121,11 +121,8 @@ RSpec.describe Resol::Service do
     end
   end
 
-  it "properly works with abstract service" do
+  it "properly works with inherited services" do
     expect(InheritedService.call!).to eq(:success_result)
-  end
-
-  it "properly works with inherited service" do
     expect(SubService.call!).to eq(:success_result)
   end
 

@@ -7,6 +7,7 @@ require_relative "result"
 module Resol
   class Service
     class InvalidCommandImplementation < StandardError; end
+    class InvalidCommandCall < StandardError; end
 
     class Failure < StandardError
       attr_accessor :data, :code
@@ -39,16 +40,21 @@ module Resol
       end
 
       def call(*args, **kwargs, &block)
-        command = build(*args, **kwargs)
-        result = catch(command) do
-          __run_callbacks__(command)
-          command.call(&block)
-          nil
-        end
-        return Resol::Success(result.data) unless result.nil?
+        service = build(*args, **kwargs)
 
-        error_message = "No success! or fail! called in the #call method in #{command.class}"
-        raise InvalidCommandImplementation, error_message
+        result = catch(service) do
+          service.instance_variable_set(:@__performing__, true)
+          __run_callbacks__(service)
+          service.call(&block)
+          :uncaught
+        end
+
+        if result == :uncaught
+          error_message = "No `#success!` or `#fail!` called in `#call` method in #{service.class}."
+          raise InvalidCommandImplementation, error_message
+        else
+          Resol::Success(result.data)
+        end
       rescue self::Failure => e
         Resol::Failure(e)
       end
@@ -62,12 +68,30 @@ module Resol
 
     private
 
+    attr_reader :__performing__
+
     def fail!(code, data = nil)
-      raise self.class::Failure.new(code, data)
+      check_performing do
+        raise self.class::Failure.new(code, data)
+      end
     end
 
     def success!(data = nil)
-      throw(self, Result.new(data))
+      check_performing do
+        throw(self, Result.new(data))
+      end
+    end
+
+    def check_performing
+      if __performing__
+        yield
+      else
+        error_message =
+          "It looks like #call instance method was called directly in #{self.class}. " \
+          "You must always use class-level `.call` or `.call!` method."
+
+        raise InvalidCommandCall, error_message
+      end
     end
   end
 end

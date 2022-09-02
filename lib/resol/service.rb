@@ -53,7 +53,7 @@ module Resol
           error_message = "No `#success!` or `#fail!` called in `#call` method in #{service.class}."
           raise InvalidCommandImplementation, error_message
         else
-          return result
+          result
         end
       end
 

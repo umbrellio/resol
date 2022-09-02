@@ -53,10 +53,8 @@ module Resol
           error_message = "No `#success!` or `#fail!` called in `#call` method in #{service.class}."
           raise InvalidCommandImplementation, error_message
         else
-          Resol::Success(result.data)
+          return result
         end
-      rescue self::Failure => e
-        Resol::Failure(e)
       end
 
       def call!(...)
@@ -72,13 +70,15 @@ module Resol
 
     def fail!(code, data = nil)
       check_performing do
-        raise self.class::Failure.new(code, data)
+        error = self.class::Failure.new(code, data)
+        throw(self, Resol::Error(error))
       end
     end
 
     def success!(data = nil)
       check_performing do
-        throw(self, Result.new(data))
+        result = Result.new(data)
+        throw(self, Resol::Success(result.data))
       end
     end
 

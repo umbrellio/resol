@@ -30,8 +30,6 @@ module Resol
         if smartcore_config && smartcore_config.respond_to?(meth)
           # rubocop:enable Style/SafeNavigation
           smartcore_config.__send__(meth, *args, &block)
-        elsif ::Kernel.method_defined?(meth) || ::Kernel.private_method_defined?(meth)
-          ::Kernel.instance_method(meth).bind_call(self, *args, &block)
         else
           super(meth, *args, &block)
         end

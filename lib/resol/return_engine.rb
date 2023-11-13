@@ -3,8 +3,9 @@
 module Resol
   module ReturnEngine
     NOT_EXITED = Object.new.freeze
+    DataWrapper = Struct.new(:data)
   end
-
-  require_relative "return_engine/catch"
-  require_relative "return_engine/return"
 end
+
+require_relative "return_engine/catch"
+require_relative "return_engine/return"

@@ -5,18 +5,16 @@ module Resol
     module Return
       extend self
 
-      DataWrapper = Struct.new(:data)
-
       def wrap_call(_service)
         yield
       end
 
       def uncaught_call?(return_obj)
-        !return_obj.is_a?(DataWrapper)
+        !return_obj.is_a?(Resol::Service::Result)
       end
 
       def handle_return(_service, data)
-        DataWrapper.new(data)
+        data
       end
     end
   end

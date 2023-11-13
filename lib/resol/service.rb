@@ -58,6 +58,10 @@ module Resol
         Resol::Failure(e)
       end
 
+      def return_engine
+        Resol::Configuration.return_engine
+      end
+
       def call!(...)
         call(...).value_or { |error| raise error }
       end
@@ -77,7 +81,7 @@ module Resol
 
     def success!(data = nil)
       check_performing do
-        return_engine.handle_return(self, Result.new(data))
+        self.class.return_engine.handle_return(self, Result.new(data))
       end
     end
 

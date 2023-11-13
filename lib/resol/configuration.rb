@@ -1,14 +1,15 @@
 # frozen_string_literal: true
 
 module Resol
-  class Configuration < Delegator
+  class Configuration
     DEFAULT_RETURN_ENGINE = ReturnEngine::Catch
 
     class << self
       def configure
         SmartCore::Initializer::Configuration.configure do |c|
-          self.configurator = c
+          self.smartcore_config = c
           yield self
+          self.smartcore_config = nil
         end
       end
 
@@ -22,11 +23,13 @@ module Resol
 
       private
 
-      attr_accessor :configurator
+      attr_accessor :smartcore_config
 
       def method_missing(meth, *args, &block)
-        if configurator.respond_to?(target)
-          configurator.__send__(meth, *args, &block)
+        # rubocop:disable Style/SafeNavigation
+        if smartcore_config && smartcore_config.respond_to?(meth)
+          # rubocop:enable Style/SafeNavigation
+          smartcore_config.__send__(meth, *args, &block)
         elsif ::Kernel.method_defined?(meth) || ::Kernel.private_method_defined?(meth)
           ::Kernel.instance_method(meth).bind_call(self, *args, &block)
         else
@@ -34,8 +37,8 @@ module Resol
         end
       end
 
-      def respond_to_missing?(m, include_private)
-        configurator.respond_to?(m, include_private)
+      def respond_to_missing?(meth, include_private)
+        smartcore_config.respond_to?(meth, include_private)
       end
     end
   end

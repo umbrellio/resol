@@ -42,14 +42,13 @@ module Resol
       def call(*args, **kwargs, &block)
         service = build(*args, **kwargs)
 
-        result = catch(service) do
+        result = return_engine.wrap_call(service) do
           service.instance_variable_set(:@__performing__, true)
           __run_callbacks__(service)
           service.call(&block)
-          :uncaught
         end
 
-        if result == :uncaught
+        if return_engine.uncaught_call?(result)
           error_message = "No `#success!` or `#fail!` called in `#call` method in #{service.class}."
           raise InvalidCommandImplementation, error_message
         else
@@ -57,6 +56,10 @@ module Resol
         end
       rescue self::Failure => e
         Resol::Failure(e)
+      end
+
+      def return_engine
+        Resol::Configuration.return_engine
       end
 
       def call!(...)
@@ -78,7 +81,7 @@ module Resol
 
     def success!(data = nil)
       check_performing do
-        throw(self, Result.new(data))
+        self.class.return_engine.handle_return(self, Result.new(data))
       end
     end
 

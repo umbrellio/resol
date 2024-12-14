@@ -54,7 +54,37 @@ and method `.call!` returns a value or throws an error (in case of `fail!` has b
 
 #### Params defining
 
-All incoming params and options can be defined using a [smart_initializer](https://github.com/smart-rb/smart_initializer) gem interface.
+`Resol` supports two gems, which provide abstract initialization flow for classes:
+
+1. [smart_initializer](https://github.com/smart-rb/smart_initializer), which was default provider for a very long time.
+2. [dry-initializer](https://dry-rb.org/gems/dry-initializer/3.1), additional provider with DSL almost identical to the smart_core's DSL.
+
+There is an _important restriction_ on using different initializers in different services.
+Descendants of a parent, into which initializer logic has already been imported, cannot override the provider
+
+You can use both providers for a different services:
+
+```ruby
+
+# Types is a namespace for all types, defined by smart_types.
+class FirstService < Resol::Service
+  use_initializer! :smartcore
+
+  param :first, Types::String
+  param :second, Types::Integer
+end
+
+# Types is a namespace for all types, defined by dry-types.
+class SecondService < Resol::Service
+  use_initializer! :dry
+
+  param :first, Types::Strict::String
+  param :second, Types::Strict::Integer
+end
+```
+
+Both initializers support inheritance. And base features for initialization flow
+like default value, arguments accessors visibility level, coercible attributes and so on.
 
 #### Return a result
 
@@ -95,13 +125,15 @@ end
 
 Methods:
 
-- `success?` – returns `true` for success result and `false` for failure result
-- `failure?` – returns `true` for failure result and `false` for success result
-- `value!` – unwraps a result object, returns the value for success result, and throws an error for failure result
-- `value_or(other_value, &block)` – returns a value for success result or `other_value` for failure result (either calls `block` in case it given)
-- `error` – returns `nil` for success result and error object (with code and data) for failure result
-- `or(&block)` – calls block for failure result, for success result does nothing
-- `either(success_proc, failure_proc)` – for success result calls success_proc with result value in args, for failure result calls failure_proc with error in args.
+- `success?` — returns `true` for success result and `false` for failure result
+- `failure?` — returns `true` for failure result and `false` for success result
+- `value!` — unwraps a result object, returns the value for success result, and throws an error for failure result
+- `value_or(other_value, &block)` — returns a value for success result or `other_value` for failure result (either calls `block` in case it given)
+- `error` — returns `nil` for success result and error object (with code and data) for failure result
+- `or(&block)` — calls block for failure result, for success result does nothing
+- `either(success_proc, failure_proc)` — for success result calls success_proc with result value in args, for failure result calls failure_proc with error in args.
+- `bind` — using with `block` for success result resolve value and pass it to the `block`, used to chain multiple monads. Block can return anything. Failure result ignore block and return `self`.
+- `fmap` — like the `bind`, but wraps value returned by block by success monad.
 
 ### Error object
 
@@ -114,6 +146,11 @@ methods `code` and `data`.
 
 Configuration constant references to `SmartCore::Initializer::Configuration`. You can read
 about available configuration options [here](https://github.com/smart-rb/smart_initializer#configuration).
+
+### Plugin System
+
+Resol implements the basic logic of using plugins to extend and change the base service class.
+You can write your own plugin and applie it by calling `Resol::Service#plugin(plugin_name)`.
 
 ## Development
 

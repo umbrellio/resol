@@ -39,10 +39,4 @@ RSpec.configure do |config|
 
   config.order = :random
   Kernel.srand config.seed
-
-  config.around do |ex|
-    old_settings = Resol::Configuration.to_h
-    ex.call
-    Resol::Configuration.instance_variable_set(:@values, old_settings)
-  end
 end

@@ -101,8 +101,6 @@ end
 
 RSpec.describe Resol::Service do
   context "with Catch return engine" do
-    before { Resol::Configuration.return_engine = Resol::ReturnEngine::Catch }
-
     it "returns a success result" do
       expect(SuccessService.call!).to eq(:success_result)
     end
@@ -167,8 +165,6 @@ RSpec.describe Resol::Service do
   end
 
   context "with Return return engine" do
-    before { Resol::Configuration.return_engine = Resol::ReturnEngine::Return }
-
     it "returns a success result" do
       expect(SuccessService.call!).to eq(:success_result)
     end

@@ -3,6 +3,7 @@
 require_relative "builder"
 require_relative "callbacks"
 require_relative "result"
+require_relative "initializers"
 
 module Resol
   class Service
@@ -27,7 +28,6 @@ module Resol
       end
     end
 
-    include SmartCore::Initializer
     include Resol::Builder
     include Resol::Callbacks
 
@@ -39,13 +39,17 @@ module Resol
         super
       end
 
-      def call(*args, **kwargs, &block)
-        service = build(*args, **kwargs)
+      def use_initializer!(initializer_lib)
+        Resol::Initializers.apply!(self, initializer_lib)
+      end
+
+      def call(*, **, &)
+        service = build(*, **)
 
         result = return_engine.wrap_call(service) do
           service.instance_variable_set(:@__performing__, true)
           __run_callbacks__(service)
-          service.call(&block)
+          service.call(&)
         end
 
         if return_engine.uncaught_call?(result)

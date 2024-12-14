@@ -25,13 +25,13 @@ module Resol
 
       attr_accessor :smartcore_config
 
-      def method_missing(meth, *args, &block)
+      def method_missing(meth, *, &)
         # rubocop:disable Style/SafeNavigation
         if smartcore_config && smartcore_config.respond_to?(meth)
           # rubocop:enable Style/SafeNavigation
-          smartcore_config.__send__(meth, *args, &block)
+          smartcore_config.__send__(meth, *, &)
         else
-          super(meth, *args, &block)
+          super
         end
       end
 

@@ -13,9 +13,10 @@ Gem::Specification.new do |spec|
   spec.homepage      = "https://github.com/umbrellio/resol"
   spec.license       = "MIT"
 
-  spec.required_ruby_version = Gem::Requirement.new(">= 2.7.0")
+  spec.required_ruby_version = Gem::Requirement.new(">= 3.2.0")
   spec.files = `git ls-files -z`.split("\x0").reject { |f| f.include?("spec") }
   spec.require_paths = ["lib"]
 
+  spec.add_dependency "dry-initializer",   "~> 3.1"
   spec.add_dependency "smart_initializer", "~> 0.7"
 end

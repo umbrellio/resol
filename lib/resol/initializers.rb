@@ -20,6 +20,8 @@ module Resol
       else
         raise ArgumentError, "unknown initializer #{initializer_name}"
       end
+
+      self.applied_classes << service_class.name
     end
 
     private
@@ -28,7 +30,7 @@ module Resol
 
     def validate_state!(service_class)
       applied_parent = service_class
-      return if service_class.ancestors.none? { |klass| klass.name.start_with?(MOD_MATCH_REGEX) }
+      return if service_class.ancestors.none? { |klass| klass.inspect.start_with?(MOD_MATCH_REGEX) }
 
       loop do
         applied_parent = applied_parent.superclass or break
@@ -36,8 +38,16 @@ module Resol
         break if applied_classes.include?(applied_parent.name)
       end
 
-      err_message = "#{applied_parent.name} or his superclasses manually include initializer dsl"
-      raise ArgumentError, err_message
+      if applied_parent.nil?
+        error!("use ::use_initializer! method on desired service class")
+      end
+
+      err_message = "#{applied_parent.name} or his superclasses already used initialize lib"
+      error!(err_message)
+    end
+
+    def error!(message)
+      raise ArgumentError, message
     end
   end
 end

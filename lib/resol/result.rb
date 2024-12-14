@@ -3,7 +3,9 @@
 module Resol
   class UnwrapError < StandardError; end
 
+  # rubocop:disable Lint/EmptyClass
   class Result; end
+  # rubocop:enable Lint/EmptyClass
 
   class Success < Result
     def initialize(value)

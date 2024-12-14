@@ -27,26 +27,17 @@ module Resol
       end
     end
 
-    module ChildMethodRestriction
-      def plugin(*)
-        raise NoMethodError
-      end
-
-      def manager
-        raise NoMethodError
-      end
-    end
-
     include Resol::Builder
     include Resol::Callbacks
 
-    Result = Struct.new(:data)
     NOT_EXITED = Object.new.freeze
+    BASE_CLASS = self
+
+    Result = Struct.new(:data)
 
     class << self
       def inherited(klass)
         klass.const_set(:Failure, Class.new(klass::Failure))
-        klass.extend(ChildMethodRestriction)
         super
       end
 
@@ -55,11 +46,15 @@ module Resol
       end
 
       def plugin(...)
+        if self::BASE_CLASS != self
+          raise ArgumentError, "can load plugins only on base Resol::Service"
+        end
+
         manager.plugin(...)
       end
 
-      def call(*, **)
-        service = build(*, **)
+      def call(...)
+        service = build(...)
 
         result = handle_catch(service) do
           service.instance_variable_set(:@__performing__, true)
@@ -130,8 +125,8 @@ module Resol
       end
     end
 
-    def proceed_return(data)
-      throw(self, data)
+    def proceed_return(service, data)
+      throw(service, data)
     end
   end
 end

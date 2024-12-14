@@ -11,7 +11,9 @@ module Resol
         end
 
         def call_service(service)
-          service.call.tap { |res| return unless res.is_a?(Service::Result) }
+          service.call.tap do |res|
+            return Resol::Service::NOT_EXITED unless res.is_a?(Service::Result)
+          end
         end
       end
 

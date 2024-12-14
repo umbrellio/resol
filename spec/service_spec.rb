@@ -99,6 +99,87 @@ class HackyService < SmartService
   end
 end
 
+class PluginSuccessService < ReturnEngineService
+  def call
+    success!(:success_result)
+  end
+end
+
+class PluginFailureService < ReturnEngineService
+  def call
+    fail!(:failure_result, { data: 123 })
+  end
+end
+
+class PluginEmptyService < ReturnEngineService
+  def call
+    "some_string"
+  end
+end
+
+class PluginAbstractService < ReturnEngineService
+end
+
+class PluginInheritedService < PluginAbstractService
+  def call
+    success!(:success_result)
+  end
+end
+
+class PluginServiceWithCall < ReturnEngineService
+  def call
+    success!(:success_result)
+  end
+end
+
+class PluginSubService < PluginServiceWithCall
+end
+
+class PluginServiceWithCallbacks < ReturnEngineService
+  before_call :define_instance_var
+
+  def call
+    success!(@some_var)
+  end
+
+  private
+
+  def define_instance_var
+    @some_var = "some_value"
+  end
+end
+
+class PluginSubServiceWithCallbacks < PluginServiceWithCallbacks
+  before_call :set_other_value
+
+  private
+
+  def set_other_value
+    @some_var += "_postfix"
+  end
+end
+
+class PluginServiceWithTransaction < ReturnEngineService
+  def call
+    DB.transaction { return success! }
+  end
+end
+
+class PluginServiceWithFailInTransaction < ReturnEngineService
+  def call
+    DB.transaction { fail!(:failed) }
+  end
+end
+
+class PluginHackyService < ReturnEngineService
+  param :count
+
+  def call
+    return success! unless count.zero?
+    PluginHackyService.build(count + 1).call
+  end
+end
+
 RSpec.describe Resol::Service do
   context "with Catch return engine" do
     it "returns a success result" do
@@ -164,41 +245,48 @@ RSpec.describe Resol::Service do
     end
   end
 
-  context "with Return return engine" do
+  context "with Return on success plugin" do
     it "returns a success result" do
-      expect(SuccessService.call!).to eq(:success_result)
+      expect(PluginSuccessService.call!).to eq(:success_result)
     end
 
     it "raises a failure result error" do
-      expect { FailureService.call! }.to raise_error do |error|
-        expect(error).to be_a(FailureService::Failure)
+      expect { PluginFailureService.call! }.to raise_error do |error|
+        expect(error).to be_a(PluginFailureService::Failure)
         expect(error.code).to eq(:failure_result)
         expect(error.data).to eq(data: 123)
       end
     end
 
     it "raises an InvalidCommandImplementation error" do
-      expect { EmptyService.call! }.to raise_error do |error|
-        expect(error).to be_a(EmptyService::InvalidCommandImplementation)
+      expect { PluginEmptyService.call! }.to raise_error do |error|
+        expect(error).to be_a(PluginEmptyService::InvalidCommandImplementation)
         expect(error.message).to eq(
-          "No `#success!` or `#fail!` called in `#call` method in EmptyService.",
+          "No `#success!` or `#fail!` called in `#call` method in PluginEmptyService.",
         )
       end
     end
 
     it "properly works with inherited services" do
-      expect(InheritedService.call!).to eq(:success_result)
-      expect(SubService.call!).to eq(:success_result)
+      expect(PluginInheritedService.call!).to eq(:success_result)
+      expect(PluginSubService.call!).to eq(:success_result)
     end
 
     it "properly executes callbacks" do
-      expect(SubServiceWithCallbacks.call!).to eq("some_value_postfix")
-      expect(ServiceWithCallbacks.call!).to eq("some_value")
+      expect(PluginSubServiceWithCallbacks.call!).to eq("some_value_postfix")
+      expect(PluginServiceWithCallbacks.call!).to eq("some_value")
+    end
+
+    it "doesn't rollback transaction" do
+      result = PluginServiceWithTransaction.call
+      expect(result.success?).to eq(true)
+      expect(result.value!).to eq(nil)
+      expect(DB.rollbacked).to eq(false)
     end
 
     context "when service failed" do
       it "rollbacks transaction" do
-        result = ServiceWithFailInTransaction.call
+        result = PluginServiceWithFailInTransaction.call
         expect(result.failure?).to eq(true)
         result.or do |error|
           expect(error.code).to eq(:failed)
@@ -210,14 +298,35 @@ RSpec.describe Resol::Service do
 
     context "when using instance #call" do
       it "raises error" do
-        expect { SuccessService.build.call }.to raise_error(Resol::Service::InvalidCommandCall)
+        expect do
+          PluginSuccessService.build.call
+        end.to raise_error(Resol::Service::InvalidCommandCall)
       end
     end
 
     context "when using instance #call inside other service" do
       it "raises error" do
-        expect { HackyService.call!(0) }.to raise_error(Resol::Service::InvalidCommandCall)
+        expect { PluginHackyService.call!(0) }.to raise_error(Resol::Service::InvalidCommandCall)
       end
+    end
+  end
+
+  context "when install plugin on the child service class" do
+    let(:child_service) { Class.new(Resol::Service) }
+
+    let(:error_message) { "can load plugins only on base Resol::Service" }
+
+    it "raises error" do
+      expect { child_service.plugin(:dump) }.to raise_error(ArgumentError, error_message)
+    end
+  end
+
+  context "when access plugin manager more then one time" do
+    let(:first_manager) { Resol::Service.send(:manager) }
+    let(:second_manager) { Resol::Service.send(:manager) }
+
+    it "memoize manager instance" do
+      expect(first_manager).to eq(second_manager)
     end
   end
 end

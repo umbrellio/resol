@@ -2,13 +2,11 @@ PATH
   remote: .
   specs:
     resol (1.0.0)
-      dry-initializer (~> 3.1)
-      smart_initializer (~> 0.7)
 
 GEM
   remote: https://rubygems.org/
   specs:
-    activesupport (8.0.1)
+    activesupport (7.2.2.1)
       base64
       benchmark (>= 0.3)
       bigdecimal
@@ -20,7 +18,6 @@ GEM
       minitest (>= 5.1)
       securerandom (>= 0.3)
       tzinfo (~> 2.0, >= 2.0.5)
-      uri (>= 0.13.1)
     ast (2.4.2)
     base64 (0.2.0)
     benchmark (0.4.0)
@@ -134,7 +131,6 @@ GEM
     umbrellio-sequel-plugins (0.17.0)
       sequel
     unicode-display_width (2.6.0)
-    uri (1.0.2)
 
 PLATFORMS
   arm64-darwin-21
@@ -149,7 +145,7 @@ DEPENDENCIES
   ci-helper
   dry-initializer
   pry
-  qonfig (= 0.28.0)
+  qonfig
   rake
   resol!
   rspec

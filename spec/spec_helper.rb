@@ -28,9 +28,27 @@ require "pry"
 require "smart_core/initializer"
 require "dry/initializer"
 
+require "resol/plugins/dummy"
+
 class SmartService < Resol::Service
   use_initializer! :smartcore
 end
+
+class ReturnEngineService < Resol::Service
+  BASE_CLASS = self
+
+  use_initializer! :dry
+
+  class << self
+    private
+
+    def manager
+      @manager ||= Resol::Plugins::Manager.new(self)
+    end
+  end
+end
+
+ReturnEngineService.plugin(:return_in_service)
 
 RSpec.configure do |config|
   config.example_status_persistence_file_path = ".rspec_status"
@@ -39,4 +57,10 @@ RSpec.configure do |config|
 
   config.order = :random
   Kernel.srand config.seed
+
+  config.around do |ex|
+    applied_classes = Resol::Initializers.send(:applied_classes).dup
+    ex.call
+    Resol::Initializers.send(:applied_classes=, applied_classes)
+  end
 end

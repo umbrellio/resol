@@ -6,11 +6,13 @@ module Resol
   module Plugins
     PLUGINS_PATH = Pathname("resol/plugins")
     class Manager
-      def initialize
+      def initialize(target_class = nil)
         self.plugins = []
+        self.target_class = target_class || Resol::Service
       end
 
       def plugin(plugin_name)
+        plugin_name = plugin_name.to_s
         return if plugins.include?(plugin_name)
 
         plugin_module = find_plugin_module(plugin_name)
@@ -27,21 +29,21 @@ module Resol
 
       private
 
-      attr_accessor :plugins
+      attr_accessor :plugins, :target_class
 
       def find_plugin_module(plugin_name)
         require PLUGINS_PATH.join(plugin_name)
-        Plugins.const_get(classify_plugin_name(plugin_name))
+        resolve_module(classify_plugin_name(plugin_name))
       rescue LoadError, NameError => e
-        raise "Failed to load plugin '#{plugin_name}': #{e.message}"
+        raise ArgumentError, "Failed to load plugin '#{plugin_name}': #{e.message}"
+      end
+
+      def resolve_module(module_name)
+        Plugins.const_get(module_name)
       end
 
       def classify_plugin_name(string)
         string.split(/_|-/).map!(&:capitalize).join
-      end
-
-      def target_class
-        Resol::Service
       end
     end
   end

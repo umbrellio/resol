@@ -18,25 +18,25 @@ class DB
   end
 end
 
-class SuccessService < Resol::Service
+class SuccessService < SmartService
   def call
     success!(:success_result)
   end
 end
 
-class FailureService < Resol::Service
+class FailureService < SmartService
   def call
     fail!(:failure_result, { data: 123 })
   end
 end
 
-class EmptyService < Resol::Service
+class EmptyService < SmartService
   def call
     "some_string"
   end
 end
 
-class AbstractService < Resol::Service
+class AbstractService < SmartService
 end
 
 class InheritedService < AbstractService
@@ -45,7 +45,7 @@ class InheritedService < AbstractService
   end
 end
 
-class ServiceWithCall < Resol::Service
+class ServiceWithCall < SmartService
   def call
     success!(:success_result)
   end
@@ -54,7 +54,7 @@ end
 class SubService < ServiceWithCall
 end
 
-class ServiceWithCallbacks < Resol::Service
+class ServiceWithCallbacks < SmartService
   before_call :define_instance_var
 
   def call
@@ -78,19 +78,19 @@ class SubServiceWithCallbacks < ServiceWithCallbacks
   end
 end
 
-class ServiceWithTransaction < Resol::Service
+class ServiceWithTransaction < SmartService
   def call
     DB.transaction { success! }
   end
 end
 
-class ServiceWithFailInTransaction < Resol::Service
+class ServiceWithFailInTransaction < SmartService
   def call
     DB.transaction { fail!(:failed) }
   end
 end
 
-class HackyService < Resol::Service
+class HackyService < SmartService
   param :count
 
   def call

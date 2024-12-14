@@ -4,9 +4,10 @@ module Resol
   module Initializers
     extend self
 
-    INITIALIZER_ANCESTOR_REGEX = /(Dry|SmartCore)::Initializer/
+    MOD_MATCH_REGEX = /(Dry|SmartCore)::Initializer/
 
     def apply!(service_class, initializer_name)
+      self.applied_classes ||= []
       validate_state!(service_class)
 
       case initializer_name
@@ -19,8 +20,6 @@ module Resol
       else
         raise ArgumentError, "unknown initializer #{initializer_name}"
       end
-
-      (self.applied_classes ||= []) << service_class.name
     end
 
     private
@@ -28,21 +27,17 @@ module Resol
     attr_accessor :applied_classes
 
     def validate_state!(service_class)
-      applied_parent = nil
-      service_class.ancestors.any? { |klass| klass.name.start_with?(INITIALIZER_ANCESTOR_REGEX) }
+      applied_parent = service_class
+      return if service_class.ancestors.none? { |klass| klass.name.start_with?(MOD_MATCH_REGEX) }
 
       loop do
-        applied_parent = service_class.superclass or break
+        applied_parent = applied_parent.superclass or break
 
-        break if applied_classes.key?(applied_parent.name)
+        break if applied_classes.include?(applied_parent.name)
       end
 
-      if applied_parent.nil?
-        err_message = "#{service_class.name} or his superclasses manually include initializer dsl"
-        raise ArgumentError, err_message
-      else
-        raise ArgumentError, "initializer dsl already applied to #{applied_parent.name}"
-      end
+      err_message = "#{applied_parent.name} or his superclasses manually include initializer dsl"
+      raise ArgumentError, err_message
     end
   end
 end

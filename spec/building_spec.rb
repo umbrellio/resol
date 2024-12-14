@@ -1,6 +1,6 @@
 # frozen_string_literal: true
 
-class BaseService < Resol::Service
+class BaseService < SmartService
   param :type
 
   option :option

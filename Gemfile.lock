@@ -55,7 +55,7 @@ GEM
     pry (0.15.0)
       coderay (~> 1.1)
       method_source (~> 1.0)
-    qonfig (0.29.0)
+    qonfig (0.28.0)
     racc (1.8.1)
     rack (3.1.8)
     rainbow (3.1.1)
@@ -149,6 +149,7 @@ DEPENDENCIES
   ci-helper
   dry-initializer
   pry
+  qonfig (= 0.28.0)
   rake
   resol!
   rspec

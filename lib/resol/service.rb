@@ -3,7 +3,6 @@
 require_relative "builder"
 require_relative "callbacks"
 require_relative "result"
-require_relative "initializers"
 
 module Resol
   class Service
@@ -28,31 +27,47 @@ module Resol
       end
     end
 
+    module ChildMethodRestriction
+      def plugin(*)
+        raise NoMethodError
+      end
+
+      def manager
+        raise NoMethodError
+      end
+    end
+
     include Resol::Builder
     include Resol::Callbacks
 
     Result = Struct.new(:data)
+    NOT_EXITED = Object.new.freeze
 
     class << self
       def inherited(klass)
         klass.const_set(:Failure, Class.new(klass::Failure))
+        klass.extend(ChildMethodRestriction)
         super
       end
 
       def use_initializer!(initializer_lib)
-        Resol::Initializers.apply!(self, initializer_lib)
+        Initializers.apply!(self, initializer_lib)
       end
 
-      def call(*, **, &)
+      def plugin(...)
+        manager.plugin(...)
+      end
+
+      def call(*, **)
         service = build(*, **)
 
-        result = return_engine.wrap_call(service) do
+        result = handle_catch(service) do
           service.instance_variable_set(:@__performing__, true)
           __run_callbacks__(service)
-          service.call(&)
+          call_service(service)
         end
 
-        if return_engine.uncaught_call?(result)
+        if result == NOT_EXITED
           error_message = "No `#success!` or `#fail!` called in `#call` method in #{service.class}."
           raise InvalidCommandImplementation, error_message
         else
@@ -62,12 +77,26 @@ module Resol
         Resol::Failure(e)
       end
 
-      def return_engine
-        Resol::Configuration.return_engine
-      end
-
       def call!(...)
         call(...).value_or { |error| raise error }
+      end
+
+      private
+
+      def manager
+        @manager ||= Plugins::Manager.new
+      end
+
+      def handle_catch(service)
+        catch(service) do
+          yield
+          NOT_EXITED
+        end
+      end
+
+      def call_service(service)
+        service.call
+        NOT_EXITED
       end
     end
 
@@ -85,7 +114,7 @@ module Resol
 
     def success!(data = nil)
       check_performing do
-        self.class.return_engine.handle_return(self, Result.new(data))
+        proceed_return(self, Result.new(data))
       end
     end
 
@@ -99,6 +128,10 @@ module Resol
 
         raise InvalidCommandCall, error_message
       end
+    end
+
+    def proceed_return(data)
+      throw(self, data)
     end
   end
 end

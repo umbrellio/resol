@@ -3,26 +3,11 @@
 module Resol
   class UnwrapError < StandardError; end
 
-  class Result
-    # @!method success?
-    # @!method failure?
-    # @!method value_or
-    # @!method value!
-
-    def initialize(*); end
-
-    def or
-      yield(@value) if failure?
-    end
-
-    def either(success_proc, failure_proc)
-      success? ? success_proc.call(@value) : failure_proc.call(@value)
-    end
-  end
+  class Result; end
 
   class Success < Result
     def initialize(value)
-      super
+      super()
       @value = value
     end
 
@@ -34,7 +19,7 @@ module Resol
       false
     end
 
-    def value_or(*)
+    def value_or(_other_value = nil)
       @value
     end
 
@@ -42,14 +27,26 @@ module Resol
       @value
     end
 
-    def error
-      nil
+    def error = nil
+
+    def or = nil
+
+    def either(success_proc, _failure_proc)
+      success_proc.call(@value)
+    end
+
+    def bind
+      yield @value
+    end
+
+    def fmap(&)
+      Resol.Success(bind(&))
     end
   end
 
   class Failure < Result
     def initialize(error)
-      super
+      super()
       @value = error
     end
 
@@ -62,11 +59,7 @@ module Resol
     end
 
     def value_or(other_value = nil)
-      if block_given?
-        yield(@value)
-      else
-        other_value
-      end
+      block_given? ? yield(@value) : other_value
     end
 
     def value!
@@ -76,13 +69,17 @@ module Resol
     def error
       @value
     end
-  end
 
-  def self.Success(...)
-    Success.new(...)
-  end
+    def or
+      yield @value
+    end
 
-  def self.Failure(...)
-    Failure.new(...)
+    def either(_success_proc, failure_proc)
+      failure_proc.call(@value)
+    end
+
+    def bind = self
+
+    alias fmap bind
   end
 end

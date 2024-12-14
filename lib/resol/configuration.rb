@@ -1,43 +1,32 @@
 # frozen_string_literal: true
 
 module Resol
-  class Configuration
-    DEFAULT_RETURN_ENGINE = ReturnEngine::Catch
+  module Configuration
+    extend self
 
-    class << self
-      def configure
-        SmartCore::Initializer::Configuration.configure do |c|
-          self.smartcore_config = c
-          yield self
-          self.smartcore_config = nil
-        end
-      end
+    DEFAULTS = { return_engine: Resol::ReturnEngine::Catch }.freeze
 
-      def return_engine
-        @return_engine || DEFAULT_RETURN_ENGINE
-      end
+    DEFAULTS.each_key do |attr_name|
+      define_method(attr_name) { values[attr_name] }
+      define_method(:"#{attr_name}=") { |value| values[attr_name] = value }
+    end
 
-      def return_engine=(engine)
-        @return_engine = engine
-      end
+    def smart_config
+      return nil if smart_not_loaded?
 
-      private
+      SmartCore::Initializer::Configuration.config
+    end
 
-      attr_accessor :smartcore_config
+    def to_h = values.dup
 
-      def method_missing(meth, *, &)
-        # rubocop:disable Style/SafeNavigation
-        if smartcore_config && smartcore_config.respond_to?(meth)
-          # rubocop:enable Style/SafeNavigation
-          smartcore_config.__send__(meth, *, &)
-        else
-          super
-        end
-      end
+    private
 
-      def respond_to_missing?(meth, include_private)
-        smartcore_config.respond_to?(meth, include_private)
-      end
+    def smart_not_loaded?
+      !defined?(SmartCore::Initializer::Configuration)
+    end
+
+    def values
+      @values ||= DEFAULTS.dup
     end
   end
 end

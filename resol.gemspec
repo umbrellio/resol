@@ -17,6 +17,6 @@ Gem::Specification.new do |spec|
   spec.files = `git ls-files -z`.split("\x0").reject { |f| f.include?("spec") }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "dry-initializer",   "~> 3.1"
+  spec.add_dependency "dry-initializer", "~> 3.1"
   spec.add_dependency "smart_initializer", "~> 0.7"
 end

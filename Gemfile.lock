@@ -145,7 +145,6 @@ DEPENDENCIES
   ci-helper
   dry-initializer
   pry
-  qonfig
   rake
   resol!
   rspec

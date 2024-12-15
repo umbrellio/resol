@@ -2,8 +2,8 @@ PATH
   remote: .
   specs:
     resol (1.0.0)
-      dry-configurable
-      dry-container
+      dry-configurable (~> 1.2.0)
+      dry-container (~> 0.11)
 
 GEM
   remote: https://rubygems.org/

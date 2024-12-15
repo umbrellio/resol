@@ -17,6 +17,6 @@ Gem::Specification.new do |spec|
   spec.files = `git ls-files -z`.split("\x0").reject { |f| f.include?("spec") }
   spec.require_paths = ["lib"]
 
-  spec.add_dependency "dry-configurable"
-  spec.add_dependency "dry-container"
+  spec.add_dependency "dry-configurable", "~>1.2.0"
+  spec.add_dependency "dry-container", "~>0.11"
 end

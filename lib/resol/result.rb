@@ -1,4 +1,4 @@
-1# frozen_string_literal: true
+# frozen_string_literal: true
 
 module Resol
   class UnwrapError < StandardError; end

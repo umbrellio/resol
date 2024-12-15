@@ -65,10 +65,9 @@ Descendants of a parent, into which initializer logic has already been imported,
 You can use both providers for a different services:
 
 ```ruby
-
 # Types is a namespace for all types, defined by smart_types.
 class FirstService < Resol::Service
-  inject_initializer :smartcore
+  inject_initializer :smartcore_injector
 
   param :first, Types::String
   param :second, Types::Integer
@@ -76,7 +75,7 @@ end
 
 # Types is a namespace for all types, defined by dry-types.
 class SecondService < Resol::Service
-  inject_initializer :dry
+  inject_initializer :dry_injector
 
   param :first, Types::Strict::String
   param :second, Types::Strict::Integer
@@ -85,6 +84,8 @@ end
 
 Both initializers support inheritance. And base features for initialization flow
 like default value, arguments accessors visibility level, coercible attributes and so on.
+
+List of all supported initializers you can see at `DependencyContainer` definition.
 
 #### Return a result
 

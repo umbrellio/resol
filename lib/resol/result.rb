@@ -84,4 +84,16 @@ module Resol
 
     alias fmap bind
   end
+
+  # TODO: Should be in a module, which includes in classes.
+  # Example;
+  # rubocop:disable Naming/MethodName
+  def Success(...)
+    Success.new(...)
+  end
+
+  def Failure(...)
+    Failure.new(...)
+  end
+  # rubocop:enable Naming/MethodName
 end

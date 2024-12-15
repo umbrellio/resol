@@ -30,9 +30,6 @@ module Resol
     include Resol::Builder
     include Resol::Callbacks
 
-    NOT_EXITED = Object.new.freeze
-    BASE_CLASS = self
-
     Result = Struct.new(:data)
 
     class << self
@@ -41,16 +38,13 @@ module Resol
         super
       end
 
-      def use_initializer!(initializer_lib)
-        Initializers.apply!(self, initializer_lib)
+      def inject_initializer!(injector_name)
+        injector = DependencyContainer.resolve("libs.#{injector_name}")
+        injector.inject!(self)
       end
 
       def plugin(...)
-        if self::BASE_CLASS != self
-          raise ArgumentError, "can load plugins only on base Resol::Service"
-        end
-
-        manager.plugin(...)
+        manager.plugin(self, ...)
       end
 
       def call(...)
@@ -59,15 +53,12 @@ module Resol
         result = handle_catch(service) do
           service.instance_variable_set(:@__performing__, true)
           __run_callbacks__(service)
-          call_service(service)
+          service.call
         end
+        return Resol::Success(result.data) if service.__result_method__called__
 
-        if result == NOT_EXITED
-          error_message = "No `#success!` or `#fail!` called in `#call` method in #{service.class}."
-          raise InvalidCommandImplementation, error_message
-        else
-          Resol::Success(result.data)
-        end
+        error_message = "No `#success!` or `#fail!` called in `#call` method in #{service.class}."
+        raise InvalidCommandImplementation, error_message
       rescue self::Failure => e
         Resol::Failure(e)
       end
@@ -79,50 +70,45 @@ module Resol
       private
 
       def manager
-        @manager ||= Plugins::Manager.new
+        @manager ||= DependencyContainer.resolve(:base_plugin_manager)
       end
 
-      def handle_catch(service)
-        catch(service) do
-          yield
-          NOT_EXITED
-        end
-      end
-
-      def call_service(service)
-        service.call
-        NOT_EXITED
+      def handle_catch(service, &)
+        catch(service, &)
       end
     end
 
     # @!method call
+
+    attr_accessor :__result_method__called__
 
     private
 
     attr_reader :__performing__
 
     def fail!(code, data = nil)
-      check_performing do
-        raise self.class::Failure.new(code, data)
-      end
+      check_performing!
+      raise self.class::Failure.new(code, data)
     end
 
     def success!(data = nil)
-      check_performing do
-        proceed_return(self, Result.new(data))
-      end
+      check_performing!
+      result_method_called!
+      proceed_return(self, Result.new(data))
     end
 
-    def check_performing
-      if __performing__
-        yield
-      else
-        error_message =
-          "It looks like #call instance method was called directly in #{self.class}. " \
-          "You must always use class-level `.call` or `.call!` method."
+    def check_performing!
+      return if __performing__
 
-        raise InvalidCommandCall, error_message
-      end
+      error_message =
+        "It looks like #call instance method was called directly in #{self.class}. " \
+        "You must always use class-level `.call` or `.call!` method."
+
+      raise InvalidCommandCall, error_message
+    end
+
+    def result_method_called!
+      self.__result_method__called__ = true
     end
 
     def proceed_return(service, data)

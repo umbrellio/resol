@@ -22,6 +22,7 @@ if ENV["COVER"]
   end
 end
 
+require "dry/container/stub"
 require "resol"
 require "pry"
 
@@ -30,22 +31,17 @@ require "dry/initializer"
 
 require "resol/plugins/dummy"
 
+Resol::DependencyContainer.enable_stubs!
+Resol::DependencyContainer.stub("tools.base_login_manager", )
+
 class SmartService < Resol::Service
-  use_initializer! :smartcore
+  inject_initializer! :smartcore_injector
 end
 
 class ReturnEngineService < Resol::Service
   BASE_CLASS = self
 
-  use_initializer! :dry
-
-  class << self
-    private
-
-    def manager
-      @manager ||= Resol::Plugins::Manager.new(self)
-    end
-  end
+  inject_initializer! :dry_injector
 end
 
 ReturnEngineService.plugin(:return_in_service)

@@ -330,4 +330,16 @@ RSpec.describe Resol::Service do
       expect(first_manager).to eq(second_manager)
     end
   end
+
+  context "when inherited from already injected service" do
+    let(:child_service) { Class.new(SmartService) }
+    let(:injecting_proc) { proc { inject_initializer!(:dry_injector) } }
+
+    it "tries to inject initializer" do
+      expect { child_service.class_eval(&injecting_proc) }.to raise_error do |error|
+        expect(error).to be_instance_of(RuntimeError)
+        expect(error.message).to eq("parent or this class already injected")
+      end
+    end
+  end
 end

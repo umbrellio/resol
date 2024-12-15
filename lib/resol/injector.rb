@@ -9,7 +9,7 @@ module Resol
     end
 
     def inject!(service_class)
-      error!("parent or this class already injected") if service_class.is_a?(InjectMarker)
+      error!("parent or this class already injected") if service_class.include?(InjectMarker)
 
       service_class.instance_eval(&proc_register)
       service_class.include(InjectMarker)
@@ -20,7 +20,7 @@ module Resol
     attr_accessor :proc_register
 
     def error!(msg)
-       raise msg
+      raise msg
     end
   end
 end

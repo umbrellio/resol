@@ -68,7 +68,7 @@ You can use both providers for a different services:
 
 # Types is a namespace for all types, defined by smart_types.
 class FirstService < Resol::Service
-  use_initializer! :smartcore
+  inject_initializer :smartcore
 
   param :first, Types::String
   param :second, Types::Integer
@@ -76,7 +76,7 @@ end
 
 # Types is a namespace for all types, defined by dry-types.
 class SecondService < Resol::Service
-  use_initializer! :dry
+  inject_initializer :dry
 
   param :first, Types::Strict::String
   param :second, Types::Strict::Integer

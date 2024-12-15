@@ -23,6 +23,7 @@ if ENV["COVER"]
 end
 
 require "dry/container/stub"
+require "dry/configurable/test_interface"
 require "resol"
 require "pry"
 
@@ -31,8 +32,12 @@ require "dry/initializer"
 
 require "resol/plugins/dummy"
 
+module Resol
+  enable_test_interface
+end
+
 Resol::DependencyContainer.enable_stubs!
-Resol.config.send(:data=, { classes_allowed_to_patch: ["Resol::Service", "ReturnEngineService"] })
+Resol.config.classes_allowed_to_patch = %w[Resol::Service ReturnEngineService]
 
 class SmartService < Resol::Service
   inject_initializer! :smartcore_injector
@@ -53,4 +58,6 @@ RSpec.configure do |config|
 
   config.order = :random
   Kernel.srand config.seed
+
+  config.before { Resol.reset_config }
 end

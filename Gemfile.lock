@@ -142,7 +142,7 @@ GEM
     umbrellio-sequel-plugins (0.17.0)
       sequel
     unicode-display_width (2.6.0)
-    zeitwerk (2.7.1)
+    zeitwerk (2.6.18)
 
 PLATFORMS
   arm64-darwin-21

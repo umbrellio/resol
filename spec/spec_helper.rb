@@ -32,6 +32,7 @@ require "dry/initializer"
 require "resol/plugins/dummy"
 
 Resol::DependencyContainer.enable_stubs!
+Resol.config.send(:data=, { classes_allowed_to_patch: ["Resol::Service", "ReturnEngineService"] })
 
 class SmartService < Resol::Service
   inject_initializer! :smartcore_injector
@@ -52,10 +53,4 @@ RSpec.configure do |config|
 
   config.order = :random
   Kernel.srand config.seed
-
-  config.around do |ex|
-    applied_classes = Resol::Initializers.send(:applied_classes).dup
-    ex.call
-    Resol::Initializers.send(:applied_classes=, applied_classes)
-  end
 end

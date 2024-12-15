@@ -314,10 +314,11 @@ RSpec.describe Resol::Service do
   context "when install plugin on the child service class" do
     let(:child_service) { Class.new(Resol::Service) }
 
-    let(:error_message) { "can load plugins only on base Resol::Service" }
+    it "just skips installation" do
+      child_service.plugin(:dummy)
+      manager = child_service.send(:manager)
 
-    it "raises error" do
-      expect { child_service.plugin(:dump) }.to raise_error(ArgumentError, error_message)
+      expect(manager.send(:plugins)).to eq([])
     end
   end
 

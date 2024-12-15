@@ -5,7 +5,7 @@ module Resol
     DEFAULT_CONFIG_VALUES = { classes_allowed_to_patch: ["Resol::Service"] }.freeze
 
     def initialize
-      self.data = DEFAULT_CONFIG_VALUES.deep_dup
+      self.data = DEFAULT_CONFIG_VALUES.dup
     end
 
     DEFAULT_CONFIG_VALUES.each_key do |setting_name|

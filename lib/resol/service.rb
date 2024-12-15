@@ -39,7 +39,7 @@ module Resol
       end
 
       def inject_initializer!(injector_name)
-        injector = DependencyContainer.resolve("libs.#{injector_name}")
+        injector = DependencyContainer.resolve("external_libs.#{injector_name}")
         injector.inject!(self)
       end
 
@@ -70,7 +70,7 @@ module Resol
       private
 
       def manager
-        @manager ||= DependencyContainer.resolve(:base_plugin_manager)
+        @manager ||= DependencyContainer.resolve("lib.plugin_manager")
       end
 
       def handle_catch(service, &)

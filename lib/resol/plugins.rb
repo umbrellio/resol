@@ -31,7 +31,7 @@ module Resol
 
       private
 
-      attr_accessor :plugins
+      attr_accessor :allowed_classes, :plugins
 
       def resolve_allowed_classes
         Resol.config.classes_allowed_to_patch.map { |name| Object.const_get(name) }

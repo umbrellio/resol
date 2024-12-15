@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 module Resol
-  class DependencyHandler
+  class DependencyContainer
     extend Dry::Container::Mixin
 
     namespace(:external_libs) do

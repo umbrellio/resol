@@ -32,7 +32,6 @@ require "dry/initializer"
 require "resol/plugins/dummy"
 
 Resol::DependencyContainer.enable_stubs!
-Resol::DependencyContainer.stub("tools.base_login_manager", )
 
 class SmartService < Resol::Service
   inject_initializer! :smartcore_injector

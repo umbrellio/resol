@@ -17,14 +17,4 @@ module Resol
   extend Dry::Configurable
 
   setting :classes_allowed_to_patch, default: ["Resol::Service"]
-
-  # rubocop:disable Naming/MethodName
-  def Success(...)
-    Success.new(...)
-  end
-
-  def Failure(...)
-    Failure.new(...)
-  end
-  # rubocop:enable Naming/MethodName
 end

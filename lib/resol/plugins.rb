@@ -5,6 +5,7 @@ require "pathname"
 module Resol
   module Plugins
     PLUGINS_PATH = Pathname("resol/plugins")
+
     class Manager
       def self.resolve_module(module_name)
         Plugins.const_get(module_name)

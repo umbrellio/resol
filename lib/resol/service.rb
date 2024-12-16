@@ -47,13 +47,13 @@ module Resol
         manager.plugin(self, ...)
       end
 
-      def call(...)
-        service = build(...)
+      def call(*args, **kwargs, &)
+        service = build(*args, **kwargs)
 
         result = handle_catch(service) do
           service.instance_variable_set(:@__performing__, true)
           __run_callbacks__(service)
-          service.call
+          service.call(&)
         end
         return Resol::Success(result.data) if service.__result_method__called__
 

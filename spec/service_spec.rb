@@ -99,6 +99,12 @@ class HackyService < SmartService
   end
 end
 
+class YieldingService < SmartService
+  def call
+    success!(yield)
+  end
+end
+
 class PluginSuccessService < ReturnEngineService
   def call
     success!(:success_result)
@@ -241,6 +247,13 @@ RSpec.describe Resol::Service do
     context "when using instance #call inside other service" do
       it "raises error" do
         expect { HackyService.call!(0) }.to raise_error(Resol::Service::InvalidCommandCall)
+      end
+    end
+
+    context "when block passed to the service" do
+      it "yields block" do
+        result = YieldingService.call! { "kek" }
+        expect(result).to eq("kek")
       end
     end
   end

@@ -38,15 +38,33 @@ module Resol
         super
       end
 
-      def inject_initializer!(injector_name)
-        injector = DependencyContainer.resolve("external_libs.#{injector_name}")
-        injector.inject!(self)
+      # Allows you to configure an initializer library for this service,
+      # such as `dry-initializer` or `smart_core/initializer`.
+      #
+      # @param initializer_name [String, Symbol]
+      #   The name of the initializer (e.g., `:dry` or `:smart`).
+      # @return [void]
+      def use_initializer!(initializer_name)
+        Resol::Injector.new(initializer_name).inject!(self)
       end
 
       def plugin(...)
         manager.plugin(self, ...)
       end
 
+      # Calls the service using class-level invocation. Builds the service object,
+      # runs any callbacks, and invokes the `#call` instance method.
+      #
+      # @param args [Array] Positional arguments for building service instance.
+      # @param kwargs [Hash] Keyword arguments for building service instance.
+      # @yield [block] An optional block passed into service's `#call`.
+      #
+      # @return [Resol::Success, Resol::Failure]
+      #   Returns a `Resol::Success` if the service completed via `success!`,
+      #   or a `Resol::Failure` if exited with`fail!` calling.
+      #
+      # @raise [InvalidCommandImplementation]
+      #   If neither `#success!` nor `#fail!` is called inside the `#call` method.
       def call(*args, **kwargs, &)
         service = build(*args, **kwargs)
 
@@ -63,6 +81,18 @@ module Resol
         Resol::Failure(e)
       end
 
+      # Same as {call}, but attempts to resolve value from monad.
+      # If the result is a failure, it raises the error instead of returning a `Resol::Failure`.
+      #
+      # @param args [Array]  Positional arguments for building the service instance.
+      # @param kwargs [Hash] Keyword arguments for building the service instance.
+      # @yield [block] An optional block passed to the service's `#call`.
+      #
+      # @return [Object]
+      #   Returns a value, with which instance of service interrupts with {#success!}.
+      #
+      # @raise [self::Failure]
+      #   Raises an error if the service fails.
       def call!(...)
         call(...).value_or { |error| raise error }
       end
@@ -70,15 +100,13 @@ module Resol
       private
 
       def manager
-        @manager ||= DependencyContainer.resolve("lib.plugin_manager")
+        @manager ||= Plugins::Manager.new
       end
 
       def handle_catch(service, &)
         catch(service, &)
       end
     end
-
-    # @!method call
 
     attr_accessor :__result_method__called__
 

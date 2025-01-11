@@ -12,9 +12,15 @@ module Resol
       end
 
       module InstanceMethods
-        private
+        module PrependedMethods
+          private
 
-        def proceed_return(_service, data) = data
+          def proceed_return(_service, data) = data
+        end
+
+        def self.included(service)
+          service.prepend(PrependedMethods)
+        end
       end
     end
   end

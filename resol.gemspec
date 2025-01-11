@@ -18,5 +18,4 @@ Gem::Specification.new do |spec|
   spec.require_paths = ["lib"]
 
   spec.add_dependency "dry-configurable", "~>1.2.0"
-  spec.add_dependency "dry-container", "~>0.11"
 end

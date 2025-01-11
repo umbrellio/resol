@@ -24,11 +24,11 @@ module Resol
 
         plugin_module = find_plugin_module(plugin_name)
         if defined?(plugin_module::InstanceMethods)
-          caller_class.prepend(plugin_module::InstanceMethods)
+          caller_class.include(plugin_module::InstanceMethods)
         end
 
         if defined?(plugin_module::ClassMethods)
-          caller_class.singleton_class.prepend(plugin_module::ClassMethods)
+          caller_class.extend(plugin_module::ClassMethods)
         end
 
         plugins << plugin_name

@@ -346,7 +346,7 @@ RSpec.describe Resol::Service do
 
   context "when inherited from already injected service" do
     let(:child_service) { Class.new(SmartService) }
-    let(:injecting_proc) { proc { inject_initializer!(:dry_injector) } }
+    let(:injecting_proc) { proc { use_initializer!(:dry) } }
 
     it "tries to inject initializer" do
       expect { child_service.class_eval(&injecting_proc) }.to raise_error do |error|

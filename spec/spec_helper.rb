@@ -22,7 +22,6 @@ if ENV["COVER"]
   end
 end
 
-require "dry/container/stub"
 require "dry/configurable/test_interface"
 require "resol"
 require "pry"
@@ -36,17 +35,16 @@ module Resol
   enable_test_interface
 end
 
-Resol::DependencyContainer.enable_stubs!
 Resol.config.classes_allowed_to_patch = %w[Resol::Service ReturnEngineService]
 
 class SmartService < Resol::Service
-  inject_initializer! :smartcore_injector
+  use_initializer! :smart
 end
 
 class ReturnEngineService < Resol::Service
   BASE_CLASS = self
 
-  inject_initializer! :dry_injector
+  use_initializer! :dry
 end
 
 ReturnEngineService.plugin(:return_in_service)

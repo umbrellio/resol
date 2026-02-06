@@ -22,8 +22,32 @@ if ENV["COVER"]
   end
 end
 
+require "dry/configurable/test_interface"
 require "resol"
 require "pry"
+
+require "smart_core/initializer"
+require "dry/initializer"
+
+require "resol/plugins/dummy"
+
+module Resol
+  enable_test_interface
+end
+
+Resol.config.classes_allowed_to_patch = %w[Resol::Service ReturnEngineService]
+
+class SmartService < Resol::Service
+  use_initializer! :smart
+end
+
+class ReturnEngineService < Resol::Service
+  BASE_CLASS = self
+
+  use_initializer! :dry
+end
+
+ReturnEngineService.plugin(:return_in_service)
 
 RSpec.configure do |config|
   config.example_status_persistence_file_path = ".rspec_status"
@@ -32,4 +56,6 @@ RSpec.configure do |config|
 
   config.order = :random
   Kernel.srand config.seed
+
+  config.before { Resol.reset_config }
 end

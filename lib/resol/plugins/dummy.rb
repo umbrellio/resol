@@ -1,5 +1,7 @@
 # frozen_string_literal: true
 
 module Resol
-  VERSION = "1.0.0"
+  module Plugins
+    module Dummy; end
+  end
 end

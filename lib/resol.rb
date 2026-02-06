@@ -1,11 +1,16 @@
 # frozen_string_literal: true
 
-require "smart_core/initializer"
-
+require "dry-configurable"
 require_relative "resol/version"
-require_relative "resol/return_engine"
-require_relative "resol/configuration"
+
+require_relative "resol/injector"
+require_relative "resol/plugins"
 require_relative "resol/service"
 
 module Resol
+  extend self
+
+  extend Dry::Configurable
+
+  setting :classes_allowed_to_patch, default: ["Resol::Service"]
 end
